@@ -17,13 +17,11 @@ const addTaskBtn = document.getElementById("addTaskBtn");
 const resetpass = document.getElementById("resetpass");
 const sendOtp = document.getElementById("sendOtp");
 
-// Handle Nav Tabs (Home, Sign Up, Log In)
 tabs.forEach((tab, index) => {
     tab.addEventListener("click", () => {
         tabs.forEach(t => t.classList.remove("active"));
         tab.classList.add("active");
 
-        // Hide all sections first
         home.classList.add("hidden");
         home.classList.remove("flex");
         signup.classList.add("hidden");
@@ -33,7 +31,6 @@ tabs.forEach((tab, index) => {
         reset.classList.add("hidden");
         reset.classList.remove("flex");
 
-        // Show the active section based on tab index
         if (index === 0) {
             home.classList.remove("hidden");
             home.classList.add("flex");
@@ -47,7 +44,6 @@ tabs.forEach((tab, index) => {
     });
 });
 
-// Link "Get Started" button to the Sign Up tab
 getStartedBtn.addEventListener("click", () => {
     tabs[1].click();
 });
@@ -332,7 +328,7 @@ logout.addEventListener("click", () => {
     mainNav.classList.remove("hidden");
     mainNav.classList.add("flex");
     
-    // Auto-return to Home view on logout
+  
     tabs[0].click(); 
 });
 
