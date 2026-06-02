@@ -68,5 +68,39 @@
     "Email": "mail@gmail.com",
     "Password": "12345",
     "Phone": "9988776655"
+  },
+  {
+    "Name": "tashif",
+    "Email": "tashif@gmail.com",
+    "Password": "12345678",
+    "Phone": "1234567890",
+    "Tasks": [
+      {
+        "id": "HAV595",
+        "Task": "have to eat food",
+        "AddedDate": "01/06/2026",
+        "AddedTime": "09:32 am"
+      },
+      {
+        "id": "HAV186",
+        "Task": "Have to do something",
+        "AddedDate": "01/06/2026",
+        "AddedTime": "09:32 am"
+      }
+    ]
+  },
+  {
+    "Name": "mohini",
+    "Email": "mohini@gmail.com",
+    "Password": "mohini",
+    "Phone": "12345678",
+    "Tasks": [
+      {
+        "id": "JUS312",
+        "Task": "Just a task",
+        "AddedDate": "01/06/2026",
+        "AddedTime": "09:33 am"
+      }
+    ]
   }
 ]

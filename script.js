@@ -21,7 +21,6 @@ tabs.forEach((tab, index) => {
     tab.addEventListener("click", () => {
         tabs.forEach(t => t.classList.remove("active"));
         tab.classList.add("active");
-
         home.classList.add("hidden");
         home.classList.remove("flex");
         signup.classList.add("hidden");
