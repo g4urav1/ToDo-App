@@ -1,13 +1,16 @@
 const express = require("express")
 const { readFile } = require("fs")
 const app = express()
+const dotenv = require("dotenv")
+dotenv.config();
 const fs = require("fs/promises")
 const nodemailer = require("nodemailer")
+
 const sender = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "cssflows@gmail.com",
-    pass: "qrxw ljnf fxca mgnx"
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS
   }
 })
 app.use(express.json())
@@ -214,7 +217,7 @@ app.post("/forget_password", async (req, res) => {
       await sender.sendMail(
         {
           to: ExistingUser.Email,
-          from: "cssflows@gmail.com",
+         from: ` <${process.env.MAIL_USER}>`,
           subject: "CODE TO CHANGE OTP",
           html: template,
 

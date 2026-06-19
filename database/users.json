@@ -2,8 +2,9 @@
   {
     "Name": "Gaurav",
     "Email": "gauravkumarjha2107@gmail.com",
-    "Password": "454352",
-    "Phone": "95XXXXXX74"
+    "Password": "1111111",
+    "Phone": "95XXXXXX74",
+    "Tasks": []
   },
   {
     "Name": "cssflows",
@@ -41,7 +42,8 @@
         "AddedDate": "28/05/2026",
         "AddedTime": "09:28 pm"
       }
-    ]
+    ],
+    "OTP": 587232
   },
   {
     "Name": "hello",

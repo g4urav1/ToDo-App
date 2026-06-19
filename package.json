@@ -19,8 +19,9 @@
   },
   "homepage": "https://github.com/g4urav1/todo#readme",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "fs": "^0.0.1-security",
-    "nodemailer": "^8.0.7"
+    "nodemailer": "^9.0.1"
   }
 }
