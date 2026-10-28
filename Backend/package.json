@@ -4,7 +4,8 @@
   "description": "My first github repository\r In this I have Created A ToDo list web for users using Html Css And Js \r using Backend to save data",
   "main": "post.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
