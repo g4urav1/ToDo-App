@@ -1,107 +1,130 @@
 # ToDo App
 
-A simple ToDo web app made with HTML, CSS, JavaScript, Node.js, and Express.
-
-Users can sign up, log in, add tasks, remove tasks, and reset their password using an email OTP.
-
-The backend stores user data and tasks in a local JSON file.
+A full-stack To-Do web application that allows users to create accounts, log in, manage tasks, and recover passwords using email OTP verification. Built with HTML, CSS, JavaScript, Node.js, and Express.
 
 ## Features
 
-- User signup
-- User login
-- Add tasks
-- Remove tasks
-- View saved tasks
-- Password reset using email OTP
-- Backend API with Express
-- Data stored in `database/users.json`
-- Login data saved in browser localStorage
+- User registration and login
+- Task management
+- Email OTP-based password recovery
+- Backend API built with Express.js
+- JSON file-based data storage
+- Environment-based configuration for frontend and backend
+- Separately hosted frontend and backend
 
 ## Tech Stack
 
-### Frontend
-
-- HTML
-- CSS
+**Frontend**
+- HTML5
+- CSS3
 - JavaScript
+- Vite
 
-### Backend
-
+**Backend**
 - Node.js
 - Express.js
 - Nodemailer
 - CORS
 - JSON file storage
 
-## Folder Structure
+## Project Structure
 
 ```text
 ToDo-App/
-├── database/
-│   └── users.json
-├── index.html
-├── script.js
-├── style.css
-├── post.js
-├── package.json
-├── package-lock.json
-├── tailwind.config.js
+├── Backend/
+├── frontend/
 └── README.md
 ```
 
-## Backend Routes
+## Getting Started
 
-The backend runs on:
+### Prerequisites
 
-```text
-http://localhost:1111
-```
+- Node.js and npm
+- Git
 
-Routes used in this project:
-
-```text
-POST /signup
-POST /login
-POST /forget_password
-POST /reset_password
-POST /addtask
-POST /removetask
-POST /alltasks
-```
-
-## How to Run
-
-Start the backend from `Backend/`:
+### 1. Clone the repository
 
 ```bash
+git clone https://github.com/g4urav1/ToDo-App.git
+cd ToDo-App
+```
+
+### 2. Configure the backend
+
+```bash
+cd Backend
 npm install
+```
+
+Create a `.env` file in the backend directory and add the required environment variables for your email service and server configuration.
+
+Start the backend using its entry point:
+
+```bash
 node post.js
 ```
 
-Set `API_LINK` in `frontend/.env` to the backend base URL. Then start the frontend from `frontend/`:
+### 3. Configure the frontend
+
+Open a separate terminal:
 
 ```bash
+cd frontend
 npm install
+```
+
+Create a frontend `.env` file and configure the API URL to point to your deployed backend.
+
+Start the frontend locally:
+
+```bash
 npm run dev
 ```
 
-The frontend uses Vite to inject `API_LINK` into the browser bundle. For deployment, build it with `npm run build` and serve the generated `dist/` directory.
+Open the local URL provided by Vite.
 
-## Important Notes
+> The commands above assume the project uses `Backend/post.js` and Vite's default development script. Adjust them if your current configuration differs.
 
-This project is made for learning.
+## Deployment
 
-User data is stored in a JSON file, so it is not a good choice for a real app.
+The frontend and backend are hosted separately.
 
-Passwords are stored as plain text. In a real project, passwords should be hashed before saving.
+- **Frontend:** Connects to the deployed backend through its configured API URL.
+- **Backend:** Handles authentication, task operations, and email OTP functionality.
 
-Email login details should not be written directly inside the code. They should be stored safely using environment variables.
+Ensure the backend allows requests from the deployed frontend origin through an appropriate CORS configuration.
 
-## Project Status
+## Environment Variables
 
-The basic ToDo features are added. This project can be improved by adding a real database, better security, and better error handling.
+Both the frontend and backend use environment variables for configuration.
+
+- Keep backend secrets, including email credentials, in backend environment variables.
+- Configure the frontend API URL using the environment variable expected by the application.
+- Never commit `.env` files containing secrets to GitHub.
+- Remember that frontend environment variables may be exposed in the browser bundle. Never put private credentials in frontend variables.
+
+## Data Storage
+
+The application uses JSON files for data storage. This is a straightforward approach for a learning project, though a database would be more suitable for larger applications and concurrent operations.
+
+## Security Considerations
+
+- **Password storage:** Passwords are currently stored in plain text. This is not safe for real user accounts. Implement password hashing with a suitable algorithm such as bcrypt or Argon2.
+- **Email credentials:** Store credentials in backend environment variables.
+- **Input validation:** Validate and sanitize incoming data.
+- **Authentication:** Review session or token handling and protect authenticated routes.
+
+## Future Improvements
+
+- Implement secure password hashing
+- Migrate JSON storage to a database
+- Improve error handling and input validation
+- Strengthen authentication and authorization
 
 ## Author
 
-Made by Gaurav.
+**Gaurav**
+
+- [GitHub Profile](https://github.com/g4urav1)
+- [Repository](https://github.com/g4urav1/ToDo-App)
