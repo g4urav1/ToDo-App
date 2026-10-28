@@ -72,31 +72,21 @@ POST /alltasks
 
 ## How to Run
 
-Clone the repository:
-
-```bash
-git clone https://github.com/g4urav1/ToDo-App.git
-```
-
-Go to the project folder:
-
-```bash
-cd ToDo-App
-```
-
-Install dependencies:
+Start the backend from `Backend/`:
 
 ```bash
 npm install
-```
-
-Start the backend server:
-
-```bash
 node post.js
 ```
 
-Now open `index.html` in your browser.
+Set `API_LINK` in `frontend/.env` to the backend base URL. Then start the frontend from `frontend/`:
+
+```bash
+npm install
+npm run dev
+```
+
+The frontend uses Vite to inject `API_LINK` into the browser bundle. For deployment, build it with `npm run build` and serve the generated `dist/` directory.
 
 ## Important Notes
 
