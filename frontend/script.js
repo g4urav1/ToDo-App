@@ -1,3 +1,10 @@
+const configuredApiLink = import.meta.env.API_LINK;
+
+if (!configuredApiLink) {
+  throw new Error("Missing API_LINK environment variable");
+}
+
+const API_LINK = configuredApiLink;
 const tabs = document.querySelectorAll(".tab");
 const home = document.getElementById("home");
 const signup = document.getElementById("signup");
@@ -18,77 +25,78 @@ const resetpass = document.getElementById("resetpass");
 const sendOtp = document.getElementById("sendOtp");
 
 tabs.forEach((tab, index) => {
-    tab.addEventListener("click", () => {
-        tabs.forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        home.classList.add("hidden");
-        home.classList.remove("flex");
-        signup.classList.add("hidden");
-        signup.classList.remove("flex");
-        login.classList.add("hidden");
-        login.classList.remove("flex");
-        reset.classList.add("hidden");
-        reset.classList.remove("flex");
+  tab.addEventListener("click", () => {
+    tabs.forEach((t) => t.classList.remove("active"));
+    tab.classList.add("active");
+    home.classList.add("hidden");
+    home.classList.remove("flex");
+    signup.classList.add("hidden");
+    signup.classList.remove("flex");
+    login.classList.add("hidden");
+    login.classList.remove("flex");
+    reset.classList.add("hidden");
+    reset.classList.remove("flex");
 
-        if (index === 0) {
-            home.classList.remove("hidden");
-            home.classList.add("flex");
-        } else if (index === 1) {
-            signup.classList.remove("hidden");
-            signup.classList.add("flex");
-        } else if (index === 2) {
-            login.classList.remove("hidden");
-            login.classList.add("flex");
-        }
-    });
+    if (index === 0) {
+      home.classList.remove("hidden");
+      home.classList.add("flex");
+    } else if (index === 1) {
+      signup.classList.remove("hidden");
+      signup.classList.add("flex");
+    } else if (index === 2) {
+      login.classList.remove("hidden");
+      login.classList.add("flex");
+    }
+  });
 });
 
 getStartedBtn.addEventListener("click", () => {
-    tabs[1].click();
+  tabs[1].click();
 });
 
 async function loadTask() {
-    const Email = localStorage.getItem("Email");
-    const Password = localStorage.getItem("Password");
+  const Email = localStorage.getItem("Email");
+  const Password = localStorage.getItem("Password");
 
-    try {
-        const response = await fetch("http://localhost:1111/alltasks", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ Email, Password })
-        });
+  try {
+    const response = await fetch(`${API_LINK}/alltasks`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ Email, Password }),
+    });
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if (!response.ok) {
-            alert(data.message);
-            return;
-        }
-
-        renderTasks(data.TASKS);
-    } catch (error) {
-        console.log(error);
-        alert("Failed to load tasks");
+    if (!response.ok) {
+      alert(data.message);
+      return;
     }
+
+    renderTasks(data.TASKS);
+  } catch (error) {
+    console.log(error);
+    alert("Failed to load tasks");
+  }
 }
 
 async function renderTasks(tasks) {
-    const taskContainer = document.getElementById("taskContainer");
-    taskContainer.innerHTML = "";
+  const taskContainer = document.getElementById("taskContainer");
+  taskContainer.innerHTML = "";
 
-    if (tasks.length === 0) {
-        taskContainer.innerHTML = `
+  if (tasks.length === 0) {
+    taskContainer.innerHTML = `
             <div class="text-gray-300 text-center py-5">
                 No Tasks Available
             </div>
         `;
-        return;
-    }
+    return;
+  }
 
-    taskContainer.innerHTML = tasks.map((task, i) => {
-        return `
+  taskContainer.innerHTML = tasks
+    .map((task, i) => {
+      return `
         <div class="task group relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/15 hover:border-violet-400/30 hover:shadow-violet-500/10 transition-all duration-300 ease-out shadow-lg shadow-black/10 hover:-translate-y-1 overflow-hidden snap-start">
             <div class="flex flex-col gap-1">
                 <div class="flex flex-wrap items-center gap-2">
@@ -108,325 +116,321 @@ async function renderTasks(tasks) {
                 Remove
             </button>
         </div>`;
-    }).join("");
+    })
+    .join("");
 }
 
 signupBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const Name = document.getElementById("name").value.trim();
-    const Email = document.getElementById("signup-mail").value.trim();
-    const Password = document.getElementById("signup-pass").value.trim();
-    const Phone = document.getElementById("phone").value.trim();
+  const Name = document.getElementById("name").value.trim();
+  const Email = document.getElementById("signup-mail").value.trim();
+  const Password = document.getElementById("signup-pass").value.trim();
+  const Phone = document.getElementById("phone").value.trim();
 
-    if (!Name || !Email || !Password || !Phone) {
-        alert("Give all required data");
-        return;
-    }
+  if (!Name || !Email || !Password || !Phone) {
+    alert("Give all required data");
+    return;
+  }
 
-    try {
-        const response = await fetch("http://localhost:1111/signup", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ Name, Email, Password, Phone })
-        });
+  try {
+    const response = await fetch(`${API_LINK}/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ Name, Email, Password, Phone }),
+    });
 
-        const data = await response.json();
-        alert(data.Message);
+    const data = await response.json();
+    alert(data.Message);
 
-        document.getElementById("name").value = "";
-        document.getElementById("signup-mail").value = "";
-        document.getElementById("signup-pass").value = "";
-        document.getElementById("phone").value = "";
-
-    } catch (error) {
-        console.log(error);
-        alert("Server Error");
-    }
+    document.getElementById("name").value = "";
+    document.getElementById("signup-mail").value = "";
+    document.getElementById("signup-pass").value = "";
+    document.getElementById("phone").value = "";
+  } catch (error) {
+    console.log(error);
+    alert("Server Error");
+  }
 });
 
 loginBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const Email = document.getElementById("login-mail").value.trim();
-    const Password = document.getElementById("login-pass").value.trim();
+  const Email = document.getElementById("login-mail").value.trim();
+  const Password = document.getElementById("login-pass").value.trim();
 
-    document.getElementById("UserMail").setAttribute("data-email", Email)
+  document.getElementById("UserMail").setAttribute("data-email", Email);
 
-    if (!Email || !Password) {
-        alert("Give all required data");
-        return;
+  if (!Email || !Password) {
+    alert("Give all required data");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_LINK}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ Email, Password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.Message);
+      return;
     }
 
-    try {
-        const response = await fetch("http://localhost:1111/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ Email, Password })
-        });
+    alert(data.Message);
 
-        const data = await response.json();
+    localStorage.setItem("Email", Email);
+    localStorage.setItem("Password", Password);
 
-        if (!response.ok) {
-            alert(data.Message);
-            return;
-        }
+    forms.classList.add("hidden");
+    forms.classList.remove("flex");
 
-        alert(data.Message);
+    mainNav.classList.add("hidden");
+    mainNav.classList.remove("flex");
 
-        localStorage.setItem("Email", Email);
-        localStorage.setItem("Password", Password);
+    dashboard.classList.remove("hidden");
+    dashboard.classList.add("flex");
 
-        forms.classList.add("hidden");
-        forms.classList.remove("flex");
+    dashNav.classList.remove("hidden");
+    dashNav.classList.add("flex");
 
-        mainNav.classList.add("hidden");
-        mainNav.classList.remove("flex");
-
-        dashboard.classList.remove("hidden");
-        dashboard.classList.add("flex");
-
-        dashNav.classList.remove("hidden");
-        dashNav.classList.add("flex");
-
-        loadTask();
-
-    } catch (error) {
-        console.log(error);
-        alert("Server Error");
-    }
+    loadTask();
+  } catch (error) {
+    console.log(error);
+    alert("Server Error");
+  }
 });
 
 toreset.addEventListener("click", () => {
-    login.classList.add("hidden");
-    reset.classList.remove("hidden");
-    reset.classList.add("flex");
+  login.classList.add("hidden");
+  reset.classList.remove("hidden");
+  reset.classList.add("flex");
 });
 
 sendOtp.addEventListener("click", async (e) => {
-    e.preventDefault();
-    const mail = document.getElementById("reset-mail").value;
+  e.preventDefault();
+  const mail = document.getElementById("reset-mail").value;
 
-    if (!mail) {
-        alert("Enter Mail");
-        return;
+  if (!mail) {
+    alert("Enter Mail");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_LINK}/forget_password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ mail }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert("error");
+      return;
     }
 
-    try {
-        const response = await fetch("http://localhost:1111/forget_password", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ mail })
-        });
+    alert("Otp sent on Email");
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            alert("error");
-            return;
-        }
-
-        alert("Otp sent on Email");
-
-        sendOtp.classList.add("hidden");
-        resetpass.classList.remove("hidden");
-        document.getElementById("reset-mail").disabled = true;
-        document.getElementById("reset-mail").classList.add("cursor-not-allowed");
-
-    } catch (error) {
-        console.log(error);
-        alert("server error");
-    }
+    sendOtp.classList.add("hidden");
+    resetpass.classList.remove("hidden");
+    document.getElementById("reset-mail").disabled = true;
+    document.getElementById("reset-mail").classList.add("cursor-not-allowed");
+  } catch (error) {
+    console.log(error);
+    alert("server error");
+  }
 });
 
 resetpass.addEventListener("click", async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const mail = document.getElementById("reset-mail").value;
-    const OTP = document.getElementById("reset-otp").value;
-    const New_Password = document.getElementById("new-password").value;
+  const mail = document.getElementById("reset-mail").value;
+  const OTP = document.getElementById("reset-otp").value;
+  const New_Password = document.getElementById("new-password").value;
 
-    if (!mail || !OTP || !New_Password) {
-        alert("fill all fields");
-        return;
+  if (!mail || !OTP || !New_Password) {
+    alert("fill all fields");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_LINK}/reset_password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ mail, OTP, New_Password }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert("error");
+      return;
     }
 
-    try {
-        const response = await fetch("http://localhost:1111/reset_password", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ mail, OTP, New_Password })
-        });
+    alert("Password Changed");
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            alert("error");
-            return;
-        }
-
-        alert("Password Changed");
-
-        login.classList.remove("hidden");
-        login.classList.add("flex");
-
-        reset.classList.add("hidden");
-        reset.classList.remove("flex");
-
-        document.getElementById("reset-mail").value = "";
-        document.getElementById("reset-otp").value = "";
-        document.getElementById("new-password").value = "";
-
-        sendOtp.classList.remove("hidden");
-        resetpass.classList.add("hidden");
-        document.getElementById("reset-mail").disabled = false;
-        document.getElementById("reset-mail").classList.remove("cursor-not-allowed");
-
-    } catch (error) {
-        console.log(error);
-        alert("server error");
-    }
-});
-
-backToLogin.addEventListener("click", () => {
     login.classList.remove("hidden");
     login.classList.add("flex");
 
     reset.classList.add("hidden");
     reset.classList.remove("flex");
+
+    document.getElementById("reset-mail").value = "";
+    document.getElementById("reset-otp").value = "";
+    document.getElementById("new-password").value = "";
+
+    sendOtp.classList.remove("hidden");
+    resetpass.classList.add("hidden");
+    document.getElementById("reset-mail").disabled = false;
+    document
+      .getElementById("reset-mail")
+      .classList.remove("cursor-not-allowed");
+  } catch (error) {
+    console.log(error);
+    alert("server error");
+  }
+});
+
+backToLogin.addEventListener("click", () => {
+  login.classList.remove("hidden");
+  login.classList.add("flex");
+
+  reset.classList.add("hidden");
+  reset.classList.remove("flex");
 });
 
 logout.addEventListener("click", () => {
-    if (!confirm("Do You want to LogOut?")) {
-        return;
-    }
+  if (!confirm("Do You want to LogOut?")) {
+    return;
+  }
 
-    localStorage.removeItem("Email");
-    localStorage.removeItem("Password");
+  localStorage.removeItem("Email");
+  localStorage.removeItem("Password");
 
-    document.getElementById("login-mail").value = "";
-    document.getElementById("login-pass").value = "";
+  document.getElementById("login-mail").value = "";
+  document.getElementById("login-pass").value = "";
 
-    dashboard.classList.remove("flex");
-    dashboard.classList.add("hidden");
+  dashboard.classList.remove("flex");
+  dashboard.classList.add("hidden");
 
-    forms.classList.remove("hidden");
-    forms.classList.add("flex");
+  forms.classList.remove("hidden");
+  forms.classList.add("flex");
 
-    dashNav.classList.remove("flex");
-    dashNav.classList.add("hidden");
+  dashNav.classList.remove("flex");
+  dashNav.classList.add("hidden");
 
-    mainNav.classList.remove("hidden");
-    mainNav.classList.add("flex");
-    
-  
-    tabs[0].click(); 
+  mainNav.classList.remove("hidden");
+  mainNav.classList.add("flex");
+
+  tabs[0].click();
 });
 
 addTaskBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const Email = localStorage.getItem("Email");
-    const Password = localStorage.getItem("Password");
-    const Task = document.getElementById("addTask").value.trim();
+  const Email = localStorage.getItem("Email");
+  const Password = localStorage.getItem("Password");
+  const Task = document.getElementById("addTask").value.trim();
 
-    if (!Task) {
-        alert("Enter Task");
-        return;
+  if (!Task) {
+    alert("Enter Task");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_LINK}/addtask`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ Email, Password, Task }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.Message);
+      return;
     }
 
-    try {
-        const response = await fetch("http://localhost:1111/addtask", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ Email, Password, Task })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            alert(data.Message);
-            return;
-        }
-
-        alert("Task Added");
-        document.getElementById("addTask").value = "";
-        loadTask();
-
-    } catch (error) {
-        console.log(error);
-        alert("server Error");
-    }
+    alert("Task Added");
+    document.getElementById("addTask").value = "";
+    loadTask();
+  } catch (error) {
+    console.log(error);
+    alert("server Error");
+  }
 });
 
 document.addEventListener("click", async (e) => {
-    if (!e.target.classList.contains("RemoveTaskBtn")) {
-        return;
+  if (!e.target.classList.contains("RemoveTaskBtn")) {
+    return;
+  }
+
+  e.preventDefault();
+  const btn = e.target;
+  const id = btn.dataset.id;
+
+  const Email = localStorage.getItem("Email");
+  const Password = localStorage.getItem("Password");
+
+  try {
+    const response = await fetch(`${API_LINK}/removetask`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ Email, Password, id }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.Message || "Failed");
+      return;
     }
 
-    e.preventDefault();
-    const btn = e.target;
-    const id = btn.dataset.id;
-
-    const Email = localStorage.getItem("Email");
-    const Password = localStorage.getItem("Password");
-
-    try {
-        const response = await fetch("http://localhost:1111/removetask", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ Email, Password, id })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            alert(data.Message || "Failed");
-            return;
-        }
-
-        alert("Task Removed");
-        btn.closest(".task").remove();
-        loadTask();
-
-    } catch (error) {
-        console.log(error);
-        alert("Server Error");
-    }
+    alert("Task Removed");
+    btn.closest(".task").remove();
+    loadTask();
+  } catch (error) {
+    console.log(error);
+    alert("Server Error");
+  }
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-    const savedEmail = localStorage.getItem("Email");
-    const savedPassword = localStorage.getItem("Password");
+  const savedEmail = localStorage.getItem("Email");
+  const savedPassword = localStorage.getItem("Password");
 
-    if (savedEmail && savedPassword) {
-        document.getElementById("login-mail").value = savedEmail;
-        document.getElementById("login-pass").value = savedPassword;
+  if (savedEmail && savedPassword) {
+    document.getElementById("login-mail").value = savedEmail;
+    document.getElementById("login-pass").value = savedPassword;
 
-        forms.classList.add("hidden");
-        forms.classList.remove("flex");
+    forms.classList.add("hidden");
+    forms.classList.remove("flex");
 
-        mainNav.classList.add("hidden");
-        mainNav.classList.remove("flex");
+    mainNav.classList.add("hidden");
+    mainNav.classList.remove("flex");
 
-        dashboard.classList.remove("hidden");
-        dashboard.classList.add("flex");
+    dashboard.classList.remove("hidden");
+    dashboard.classList.add("flex");
 
-        dashNav.classList.remove("hidden");
-        dashNav.classList.add("flex");
+    dashNav.classList.remove("hidden");
+    dashNav.classList.add("flex");
 
-        loadTask();
-    }
+    loadTask();
+  }
 });
