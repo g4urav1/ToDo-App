@@ -374,11 +374,7 @@ app.post("/alltasks", async (req, res) => {
   }
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`API listening on port ${PORT}`);
+app.listen(process.env.PORT, "0.0.0.0", () => {
+  console.log(`API listening on port ${process.env.PORT}`);
 });
 
-start().catch((error) => {
-  console.error("Startup failed:", error.message);
-  process.exit(1);
-});
