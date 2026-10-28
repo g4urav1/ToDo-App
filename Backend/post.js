@@ -1,48 +1,44 @@
-const express = require("express")
-const { readFile } = require("fs")
-const app = express()
-const dotenv = require("dotenv")
+const express = require("express");
+const { readFile } = require("fs");
+const app = express();
+const dotenv = require("dotenv");
 dotenv.config();
-const fs = require("fs/promises")
-const nodemailer = require("nodemailer")
+const fs = require("fs/promises");
+const nodemailer = require("nodemailer");
 
 const sender = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS
-  }
-})
-app.use(express.json())
+    pass: process.env.MAIL_PASS,
+  },
+});
+app.use(express.json());
 
 const cors = require("cors");
 app.use(cors());
 
-
-
 app.post("/signup", async (req, res) => {
   try {
-    const data = await fs.readFile("./database/users.json", "utf-8")
-    const users = JSON.parse(data)
-    const NewUser = req.body
+    const data = await fs.readFile("./database/users.json", "utf-8");
+    const users = JSON.parse(data);
+    const NewUser = req.body;
 
-
-    if (!NewUser.Name || !NewUser.Email || !NewUser.Password || !NewUser.Phone) {
-      res.json({ "Message": "More Details Required" })
-      return
-    }
-    else {
-
-      const alreadyUser = users.find(
-        user => user.Email === NewUser.Email
-      );
+    if (
+      !NewUser.Name ||
+      !NewUser.Email ||
+      !NewUser.Password ||
+      !NewUser.Phone
+    ) {
+      res.json({ Message: "More Details Required" });
+      return;
+    } else {
+      const alreadyUser = users.find((user) => user.Email === NewUser.Email);
 
       if (alreadyUser) {
-
         return res.json({
-          Message: "Email already exists"
+          Message: "Email already exists",
         });
-
       }
 
       users.push(NewUser);
@@ -52,76 +48,61 @@ app.post("/signup", async (req, res) => {
       await fs.writeFile("./database/users.json", NewData);
 
       res.json({
-        Message: "Signed Up Successfully"
+        Message: "Signed Up Successfully",
       });
-
     }
-
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-})
+});
 
 app.post("/login", async (req, res) => {
   try {
-
     const UsersData = await fs.readFile("./database/users.json", "utf-8");
 
     const userArr = JSON.parse(UsersData);
 
     const { Email, Password } = req.body;
 
-   
-    const ExistingUser = userArr.find(
-      user => user.Email === Email
-    );
+    const ExistingUser = userArr.find((user) => user.Email === Email);
 
     if (!ExistingUser) {
-
       return res.status(404).json({
-        Message: "Email doesn't exist"
+        Message: "Email doesn't exist",
       });
-
     }
 
     if (ExistingUser.Password !== Password) {
-
       return res.status(401).json({
-        Message: "Wrong Password"
+        Message: "Wrong Password",
       });
-
     }
 
-
     return res.status(200).json({
-      Message: "Logged In Successfully"
+      Message: "Logged In Successfully",
     });
-
   } catch (error) {
-
     console.log(error);
 
     return res.status(500).json({
-      Message: "Server Error"
+      Message: "Server Error",
     });
-
   }
 });
 
 app.post("/forget_password", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database/users.json", "utf-8")
-    const userArr = JSON.parse(UsersData)
-    const { mail } = req.body
-    const OTP = Math.floor(100000 + Math.random() * 900000)
-    const ExistingUser = userArr.find(user => user.Email === mail)
+    const UsersData = await fs.readFile("./database/users.json", "utf-8");
+    const userArr = JSON.parse(UsersData);
+    const { mail } = req.body;
+    const OTP = Math.floor(100000 + Math.random() * 900000);
+    const ExistingUser = userArr.find((user) => user.Email === mail);
 
     if (ExistingUser) {
-
-      ExistingUser.OTP = OTP
-      const NewData = JSON.stringify(userArr, null, 2)
-      await fs.writeFile("./database/users.json", NewData)
-      const phone = ExistingUser.Phone
+      ExistingUser.OTP = OTP;
+      const NewData = JSON.stringify(userArr, null, 2);
+      await fs.writeFile("./database/users.json", NewData);
+      const phone = ExistingUser.Phone;
       const template = `
     <!DOCTYPE html>
     <html lang="en">
@@ -210,76 +191,61 @@ app.post("/forget_password", async (req, res) => {
 
     </body>
     </html>
-    `
-      await sender.sendMail(
-        {
+    `;
+      await sender
+        .sendMail({
           to: ExistingUser.Email,
-         from: ` <${process.env.MAIL_USER}>`,
+          from: ` <${process.env.MAIL_USER}>`,
           subject: "CODE TO CHANGE OTP",
           html: template,
-
-        }
-      )
+        })
         .then(() => console.log("User Email sent"))
-        .catch((err) => console.log(err))
-
+        .catch((err) => console.log(err));
 
       // const data = await fetch("https://2factor.in/API/V1/1219c576-5337-11f1-9800-0200cd936042/SMS/+91" + phone + "/" + ExistingUser.OTP + "/" + "OTP_SENDER")
       // const response = await data.json()
 
-
-      res.status(200).json(
-        {
-          "Email": ExistingUser.Email,
-          "OTP": ExistingUser.OTP,
-          // response
-        }
-      )
-
-
-
+      res.status(200).json({
+        Email: ExistingUser.Email,
+        OTP: ExistingUser.OTP,
+        // response
+      });
+    } else {
+      res.status(404).json("NO user found, Go to SignUp page");
     }
-    else {
-      res.status(404).json("NO user found, Go to SignUp page")
-    }
-
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-})
+});
 
 app.post("/reset_password", async (req, res) => {
   try {
-
-    const UsersData = await fs.readFile("./database/users.json", "utf-8")
-    const { mail, OTP, New_Password } = req.body
+    const UsersData = await fs.readFile("./database/users.json", "utf-8");
+    const { mail, OTP, New_Password } = req.body;
 
     if (!mail || !OTP || !New_Password) {
-      res.json({ "message": "Give All Neccessary Details" })
-      return
+      res.json({ message: "Give All Neccessary Details" });
+      return;
     }
 
-    const userArr = JSON.parse(UsersData)
-    const validUser = userArr.find(user => user.Email === mail && user.OTP == OTP)
+    const userArr = JSON.parse(UsersData);
+    const validUser = userArr.find(
+      (user) => user.Email === mail && user.OTP == OTP,
+    );
 
     if (validUser) {
-      validUser.Password = New_Password
-      validUser.OTP = undefined
-      const NewData = JSON.stringify(userArr, null, 2)
-      await fs.writeFile("./database/users.json", NewData)
-      res.status(200).json(validUser)
-
+      validUser.Password = New_Password;
+      validUser.OTP = undefined;
+      const NewData = JSON.stringify(userArr, null, 2);
+      await fs.writeFile("./database/users.json", NewData);
+      res.status(200).json(validUser);
+    } else {
+      res.status(401).json({ message: "Wrong data" });
     }
-    else {
-      res.status(401).json({ "message": "Wrong data" })
-    }
-
-
-
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-})
+});
 
 app.post("/addtask", async (req, res) => {
   try {
@@ -289,24 +255,22 @@ app.post("/addtask", async (req, res) => {
     const { Email, Password, Task } = req.body;
 
     if (!Email || !Password || !Task) {
-      return res.json("Give all required data")
+      return res.json("Give all required data");
     }
 
     const ExistingUser = UserArr.find(
-      user => user.Email === Email && user.Password === Password
+      (user) => user.Email === Email && user.Password === Password,
     );
 
     if (!ExistingUser) {
       return res.json("User not found");
-
     }
 
-    const givenTask = Task.trim()
+    const givenTask = Task.trim();
 
     if (givenTask == "") {
-      return res.json("Enter Valid Task")
+      return res.json("Enter Valid Task");
     }
-
 
     if (!ExistingUser.Tasks) {
       ExistingUser.Tasks = [];
@@ -323,17 +287,21 @@ app.post("/addtask", async (req, res) => {
 
     const AddTime = today.toLocaleTimeString([], {
       hour: "2-digit",
-      minute: "2-digit"
+      minute: "2-digit",
     });
-    ExistingUser.Tasks.unshift({ id: id, Task: givenTask, AddedDate: AddDate, AddedTime: AddTime });
+    ExistingUser.Tasks.unshift({
+      id: id,
+      Task: givenTask,
+      AddedDate: AddDate,
+      AddedTime: AddTime,
+    });
 
     await fs.writeFile(
       "./database/users.json",
-      JSON.stringify(UserArr, null, 2)
+      JSON.stringify(UserArr, null, 2),
     );
 
-    res.json({Message:"Task Added"});
-
+    res.json({ Message: "Task Added" });
   } catch (error) {
     console.log(error);
     res.json("Server Error");
@@ -347,51 +315,50 @@ app.post("/removetask", async (req, res) => {
 
     const { Email, Password, id } = req.body;
     if (!Email || !Password || !id) {
-      return res.json("Give all required data")
+      return res.json("Give all required data");
     }
 
     const ExistingUser = UserArr.find(
-      user => user.Email === Email && user.Password === Password
+      (user) => user.Email === Email && user.Password === Password,
     );
 
     if (!ExistingUser) {
       return res.json("User not found");
     }
 
-    const ExistingTask = ExistingUser.Tasks.find(task => task.id === id);
+    const ExistingTask = ExistingUser.Tasks.find((task) => task.id === id);
 
     if (!ExistingTask) {
       return res.json("No tasks found");
     }
 
-    ExistingUser.Tasks = ExistingUser.Tasks.filter(task => task.id !== id);
+    ExistingUser.Tasks = ExistingUser.Tasks.filter((task) => task.id !== id);
 
     await fs.writeFile(
       "./database/users.json",
-      JSON.stringify(UserArr, null, 2)
+      JSON.stringify(UserArr, null, 2),
     );
 
     res.json("Task Removed");
-
   } catch (error) {
     console.log(error);
     res.json("Server Error");
   }
 });
 
-
 app.post("/alltasks", async (req, res) => {
   try {
-
-    const UsersData = await fs.readFile("./database/users.json", "utf-8")
-    const UserArr = JSON.parse(UsersData)
-    const { Email, Password } = req.body
+    const UsersData = await fs.readFile("./database/users.json", "utf-8");
+    const UserArr = JSON.parse(UsersData);
+    const { Email, Password } = req.body;
 
     if (!Email || !Password) {
-      return res.json("Give all required data")
+      return res.json("Give all required data");
     }
 
-    const ExistingUser = UserArr.find(u => u.Email === Email && u.Password === Password)
+    const ExistingUser = UserArr.find(
+      (u) => u.Email === Email && u.Password === Password,
+    );
 
     if (!ExistingUser) {
       return res.status(404).json("User not found");
@@ -399,20 +366,19 @@ app.post("/alltasks", async (req, res) => {
 
     res.json({
       "No of Tasks": ExistingUser.Tasks ? ExistingUser.Tasks.length : 0,
-      "TASKS": ExistingUser.Tasks || []
-    })
-
-
+      TASKS: ExistingUser.Tasks || [],
+    });
   } catch (error) {
-    console.log(error)
-    res.json(error.message)
+    console.log(error);
+    res.json(error.message);
   }
-})
+});
 
-app.listen(1111, () => {
-  console.log("Server started on port http://localhost:1111")
-})
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`API listening on port ${PORT}`);
+});
 
-
-// fetch("http://localhost:8080/addtask/new taskasd asdhashdjas dasd da")
-// har task ka unique id hona chahiye
+start().catch((error) => {
+  console.error("Startup failed:", error.message);
+  process.exit(1);
+});
