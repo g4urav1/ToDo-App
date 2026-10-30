@@ -13,6 +13,7 @@ A full-stack To-Do web application that allows users to create accounts, log in,
 - Backend API with Express
 - Data stored in `database/users.json`
 - Login data saved in browser localStorage
+- Brcypt to hash password before saving
 
 ## Tech Stack
 
@@ -93,8 +94,6 @@ The frontend uses Vite to inject `API_LINK` into the browser bundle. For deploym
 This project is made for learning.
 
 User data is stored in a JSON file, so it is not a good choice for a real app.
-
-Passwords are stored as plain text. In a real project, passwords should be hashed before saving.
 
 Email login details should not be written directly inside the code. They should be stored safely using environment variables.
 
