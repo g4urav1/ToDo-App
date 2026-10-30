@@ -4,13 +4,15 @@ A full-stack To-Do web application that allows users to create accounts, log in,
 
 ## Features
 
-- User registration and login
-- Task management
-- Email OTP-based password recovery
-- Backend API built with Express.js
-- JSON file-based data storage
-- Environment-based configuration for frontend and backend
-- Separately hosted frontend and backend
+- User signup
+- User login
+- Add tasks
+- Remove tasks
+- View saved tasks
+- Password reset using email OTP
+- Backend API with Express
+- Data stored in `database/users.json`
+- Login data saved in browser localStorage
 
 ## Tech Stack
 
@@ -23,6 +25,7 @@ A full-stack To-Do web application that allows users to create accounts, log in,
 **Backend**
 - Node.js
 - Express.js
+- bcrypt
 - Nodemailer
 - CORS
 - JSON file storage
@@ -62,6 +65,7 @@ Create a `.env` file in the backend directory and add the required environment v
 Start the backend using its entry point:
 
 ```bash
+npm install
 node post.js
 ```
 
@@ -82,38 +86,17 @@ Start the frontend locally:
 npm run dev
 ```
 
-Open the local URL provided by Vite.
+The frontend uses Vite to inject `API_LINK` into the browser bundle. For deployment, build it with `npm run build` and serve the generated `dist/` directory.
 
-> The commands above assume the project uses `Backend/post.js` and Vite's default development script. Adjust them if your current configuration differs.
+## Important Notes
 
-## Deployment
+This project is made for learning.
 
-The frontend and backend are hosted separately.
+User data is stored in a JSON file, so it is not a good choice for a real app.
 
-- **Frontend:** Connects to the deployed backend through its configured API URL.
-- **Backend:** Handles authentication, task operations, and email OTP functionality.
+Passwords are stored as plain text. In a real project, passwords should be hashed before saving.
 
-Ensure the backend allows requests from the deployed frontend origin through an appropriate CORS configuration.
-
-## Environment Variables
-
-Both the frontend and backend use environment variables for configuration.
-
-- Keep backend secrets, including email credentials, in backend environment variables.
-- Configure the frontend API URL using the environment variable expected by the application.
-- Never commit `.env` files containing secrets to GitHub.
-- Remember that frontend environment variables may be exposed in the browser bundle. Never put private credentials in frontend variables.
-
-## Data Storage
-
-The application uses JSON files for data storage. This is a straightforward approach for a learning project, though a database would be more suitable for larger applications and concurrent operations.
-
-## Security Considerations
-
-- **Password storage:** Passwords are currently stored in plain text. This is not safe for real user accounts. Implement password hashing with a suitable algorithm such as bcrypt or Argon2.
-- **Email credentials:** Store credentials in backend environment variables.
-- **Input validation:** Validate and sanitize incoming data.
-- **Authentication:** Review session or token handling and protect authenticated routes.
+Email login details should not be written directly inside the code. They should be stored safely using environment variables.
 
 ## Future Improvements
 

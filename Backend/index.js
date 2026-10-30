@@ -1,10 +1,41 @@
 const express = require("express");
-const { readFile } = require("fs");
 const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
 const fs = require("fs/promises");
+const path = require("path");
 const nodemailer = require("nodemailer");
+const bcrypt = require("bcrypt");
+const databaseDirectory = path.join(__dirname, "database");
+const usersFile = path.join(databaseDirectory, "users.json");
+
+async function ensureUsersFile() {
+  await fs.mkdir(databaseDirectory, { recursive: true });
+
+  try {
+    await fs.access(usersFile);
+  } catch (error) {
+    if (error.code !== "ENOENT") {
+      throw error;
+    }
+
+    await fs.writeFile(usersFile, "[]\n", { flag: "wx" });
+  }
+}
+
+async function findAuthenticatedUser(users, Email, Password) {
+  const user = users.find((existingUser) => existingUser.Email === Email);
+
+  if (
+    !user ||
+    typeof Password !== "string" ||
+    typeof user.Password !== "string"
+  ) {
+    return undefined;
+  }
+
+  return (await bcrypt.compare(Password, user.Password)) ? user : undefined;
+}
 
 const sender = nodemailer.createTransport({
   service: "gmail",
@@ -20,13 +51,14 @@ app.use(cors());
 
 app.post("/signup", async (req, res) => {
   try {
-    const data = await fs.readFile("./database/users.json", "utf-8");
+    const data = await fs.readFile(usersFile, "utf-8");
     const users = JSON.parse(data);
     const NewUser = req.body;
 
     if (
       !NewUser.Name ||
       !NewUser.Email ||
+      typeof NewUser.Password !== "string" ||
       !NewUser.Password ||
       !NewUser.Phone
     ) {
@@ -41,11 +73,12 @@ app.post("/signup", async (req, res) => {
         });
       }
 
+      NewUser.Password = await bcrypt.hash(NewUser.Password, 10);
       users.push(NewUser);
 
       const NewData = JSON.stringify(users, null, 2);
 
-      await fs.writeFile("./database/users.json", NewData);
+      await fs.writeFile(usersFile, NewData);
 
       res.json({
         Message: "Signed Up Successfully",
@@ -58,7 +91,7 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database/users.json", "utf-8");
+    const UsersData = await fs.readFile(usersFile, "utf-8");
 
     const userArr = JSON.parse(UsersData);
 
@@ -72,7 +105,11 @@ app.post("/login", async (req, res) => {
       });
     }
 
-    if (ExistingUser.Password !== Password) {
+    if (
+      typeof Password !== "string" ||
+      typeof ExistingUser.Password !== "string" ||
+      !(await bcrypt.compare(Password, ExistingUser.Password))
+    ) {
       return res.status(401).json({
         Message: "Wrong Password",
       });
@@ -92,7 +129,7 @@ app.post("/login", async (req, res) => {
 
 app.post("/forget_password", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database/users.json", "utf-8");
+    const UsersData = await fs.readFile(usersFile, "utf-8");
     const userArr = JSON.parse(UsersData);
     const { mail } = req.body;
     const OTP = Math.floor(100000 + Math.random() * 900000);
@@ -101,7 +138,7 @@ app.post("/forget_password", async (req, res) => {
     if (ExistingUser) {
       ExistingUser.OTP = OTP;
       const NewData = JSON.stringify(userArr, null, 2);
-      await fs.writeFile("./database/users.json", NewData);
+      await fs.writeFile(usersFile, NewData);
       const phone = ExistingUser.Phone;
       const template = `
     <!DOCTYPE html>
@@ -220,10 +257,10 @@ app.post("/forget_password", async (req, res) => {
 
 app.post("/reset_password", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database/users.json", "utf-8");
+    const UsersData = await fs.readFile(usersFile, "utf-8");
     const { mail, OTP, New_Password } = req.body;
 
-    if (!mail || !OTP || !New_Password) {
+    if (!mail || !OTP || typeof New_Password !== "string" || !New_Password) {
       res.json({ message: "Give All Neccessary Details" });
       return;
     }
@@ -234,10 +271,10 @@ app.post("/reset_password", async (req, res) => {
     );
 
     if (validUser) {
-      validUser.Password = New_Password;
+      validUser.Password = await bcrypt.hash(New_Password, 10);
       validUser.OTP = undefined;
       const NewData = JSON.stringify(userArr, null, 2);
-      await fs.writeFile("./database/users.json", NewData);
+      await fs.writeFile(usersFile, NewData);
       res.status(200).json(validUser);
     } else {
       res.status(401).json({ message: "Wrong data" });
@@ -249,7 +286,7 @@ app.post("/reset_password", async (req, res) => {
 
 app.post("/addtask", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database/users.json", "utf-8");
+    const UsersData = await fs.readFile(usersFile, "utf-8");
     const UserArr = JSON.parse(UsersData);
 
     const { Email, Password, Task } = req.body;
@@ -258,9 +295,7 @@ app.post("/addtask", async (req, res) => {
       return res.json("Give all required data");
     }
 
-    const ExistingUser = UserArr.find(
-      (user) => user.Email === Email && user.Password === Password,
-    );
+    const ExistingUser = await findAuthenticatedUser(UserArr, Email, Password);
 
     if (!ExistingUser) {
       return res.json("User not found");
@@ -297,7 +332,7 @@ app.post("/addtask", async (req, res) => {
     });
 
     await fs.writeFile(
-      "./database/users.json",
+      usersFile,
       JSON.stringify(UserArr, null, 2),
     );
 
@@ -310,7 +345,7 @@ app.post("/addtask", async (req, res) => {
 
 app.post("/removetask", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database/users.json", "utf-8");
+    const UsersData = await fs.readFile(usersFile, "utf-8");
     const UserArr = JSON.parse(UsersData);
 
     const { Email, Password, id } = req.body;
@@ -318,9 +353,7 @@ app.post("/removetask", async (req, res) => {
       return res.json("Give all required data");
     }
 
-    const ExistingUser = UserArr.find(
-      (user) => user.Email === Email && user.Password === Password,
-    );
+    const ExistingUser = await findAuthenticatedUser(UserArr, Email, Password);
 
     if (!ExistingUser) {
       return res.json("User not found");
@@ -335,7 +368,7 @@ app.post("/removetask", async (req, res) => {
     ExistingUser.Tasks = ExistingUser.Tasks.filter((task) => task.id !== id);
 
     await fs.writeFile(
-      "./database/users.json",
+      usersFile,
       JSON.stringify(UserArr, null, 2),
     );
 
@@ -348,7 +381,7 @@ app.post("/removetask", async (req, res) => {
 
 app.post("/alltasks", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database/users.json", "utf-8");
+    const UsersData = await fs.readFile(usersFile, "utf-8");
     const UserArr = JSON.parse(UsersData);
     const { Email, Password } = req.body;
 
@@ -356,9 +389,7 @@ app.post("/alltasks", async (req, res) => {
       return res.json("Give all required data");
     }
 
-    const ExistingUser = UserArr.find(
-      (u) => u.Email === Email && u.Password === Password,
-    );
+    const ExistingUser = await findAuthenticatedUser(UserArr, Email, Password);
 
     if (!ExistingUser) {
       return res.status(404).json("User not found");
@@ -374,7 +405,15 @@ app.post("/alltasks", async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT, "0.0.0.0", () => {
-  console.log(`API listening on port ${process.env.PORT}`);
-});
+async function startServer() {
+  await ensureUsersFile();
+  const port = process.env.PORT || 1111;
+  app.listen(port, "0.0.0.0", () => {
+    console.log(`API listening on port ${port}`);
+  });
+}
 
+startServer().catch((error) => {
+  console.error("Failed to start backend:", error);
+  process.exitCode = 1;
+});
