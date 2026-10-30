@@ -35,7 +35,7 @@ app.use(cors());
 
 app.post("/signup", async (req, res) => {
   try {
-    const data = await fs.readFile("./database.users.json", "utf-8");
+    const data = await fs.readFile("./database/users.json", "utf-8");
     const users = JSON.parse(data);
     const NewUser = req.body;
 
@@ -62,7 +62,7 @@ app.post("/signup", async (req, res) => {
 
       const NewData = JSON.stringify(users, null, 2);
 
-      await fs.writeFile("./database.users.json", NewData);
+      await fs.writeFile("./database/users.json", NewData);
 
       res.json({
         Message: "Signed Up Successfully",
@@ -75,7 +75,7 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database.users.json", "utf-8");
+    const UsersData = await fs.readFile("./database/users.json", "utf-8");
 
     const userArr = JSON.parse(UsersData);
 
@@ -113,7 +113,7 @@ app.post("/login", async (req, res) => {
 
 app.post("/forget_password", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database.users.json", "utf-8");
+    const UsersData = await fs.readFile("./database/users.json", "utf-8");
     const userArr = JSON.parse(UsersData);
     const { mail } = req.body;
     const OTP = Math.floor(100000 + Math.random() * 900000);
@@ -122,7 +122,7 @@ app.post("/forget_password", async (req, res) => {
     if (ExistingUser) {
       ExistingUser.OTP = OTP;
       const NewData = JSON.stringify(userArr, null, 2);
-      await fs.writeFile("./database.users.json", NewData);
+      await fs.writeFile("./database/users.json", NewData);
       const phone = ExistingUser.Phone;
       const template = `
     <!DOCTYPE html>
@@ -241,7 +241,7 @@ app.post("/forget_password", async (req, res) => {
 
 app.post("/reset_password", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database.users.json", "utf-8");
+    const UsersData = await fs.readFile("./database/users.json", "utf-8");
     const { mail, OTP, New_Password } = req.body;
 
     if (!mail || !OTP || typeof New_Password !== "string" || !New_Password) {
@@ -258,7 +258,7 @@ app.post("/reset_password", async (req, res) => {
       validUser.Password = await bcrypt.hash(New_Password, 10);
       validUser.OTP = undefined;
       const NewData = JSON.stringify(userArr, null, 2);
-      await fs.writeFile("./database.users.json", NewData);
+      await fs.writeFile("./database/users.json", NewData);
       res.status(200).json({ Message: "Password Changed" });
     } else {
       res.status(401).json({ message: "Wrong data" });
@@ -270,7 +270,7 @@ app.post("/reset_password", async (req, res) => {
 
 app.post("/addtask", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database.users.json", "utf-8");
+    const UsersData = await fs.readFile("./database/users.json", "utf-8");
     const UserArr = JSON.parse(UsersData);
 
     const { Email, Password, Task } = req.body;
@@ -316,7 +316,7 @@ app.post("/addtask", async (req, res) => {
     });
 
     await fs.writeFile(
-      "./database.users.json",
+      "./database/users.json",
       JSON.stringify(UserArr, null, 2),
     );
 
@@ -329,7 +329,7 @@ app.post("/addtask", async (req, res) => {
 
 app.post("/removetask", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database.users.json", "utf-8");
+    const UsersData = await fs.readFile("./database/users.json", "utf-8");
     const UserArr = JSON.parse(UsersData);
 
     const { Email, Password, id } = req.body;
@@ -352,7 +352,7 @@ app.post("/removetask", async (req, res) => {
     ExistingUser.Tasks = ExistingUser.Tasks.filter((task) => task.id !== id);
 
     await fs.writeFile(
-      "./database.users.json",
+      "./database/users.json",
       JSON.stringify(UserArr, null, 2),
     );
 
@@ -365,7 +365,7 @@ app.post("/removetask", async (req, res) => {
 
 app.post("/alltasks", async (req, res) => {
   try {
-    const UsersData = await fs.readFile("./database.users.json", "utf-8");
+    const UsersData = await fs.readFile("./database/users.json", "utf-8");
     const UserArr = JSON.parse(UsersData);
     const { Email, Password } = req.body;
 
