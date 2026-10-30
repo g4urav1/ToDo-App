@@ -1,0 +1,101 @@
+[
+  {
+    "Name": "Gaurav",
+    "Email": "gauravkumarjha2107@gmail.com",
+    "Password": "$2b$10$ZJzwxdHPmtAghXtITUoWZeZGZNoOLONNffUGHvB5SPwI.Z8EFOcnm",
+    "Phone": "95XXXXXX74",
+    "Tasks": []
+  },
+  {
+    "Name": "cssflows",
+    "Email": "cssflows@gmail.com",
+    "Password": "$2b$10$/KExO3iLEJ4p0qSMqh.N3e6T.gpY7jFPkXs.G1JWskFgTuv4rYgaW",
+    "Phone": "93xxxx18",
+    "Tasks": [
+      {
+        "id": "NEW720",
+        "Task": "New task",
+        "AddedDate": "30/05/2026",
+        "AddedTime": "08:19 am"
+      },
+      {
+        "id": "UPD165",
+        "Task": "Update code on github repo",
+        "AddedDate": "28/05/2026",
+        "AddedTime": "09:30 pm"
+      },
+      {
+        "id": "BUI135",
+        "Task": "Build DashBoard For Todo website",
+        "AddedDate": "27/05/2026",
+        "AddedTime": "10:03 am"
+      },
+      {
+        "id": "TAS984",
+        "Task": "Task added using frontend",
+        "AddedDate": "28/05/2026",
+        "AddedTime": "09:28 pm"
+      }
+    ]
+  },
+  {
+    "Name": "hello",
+    "Email": "user@gmail.com",
+    "Password": "$2b$10$tH5KeIHHTPYVSwn2oyHjVewl7oiBUjnJJh3ZJWi/jIAqYahT52AFW",
+    "Phone": "1111111111",
+    "Tasks": [
+      {
+        "id": "1841",
+        "Task": "1",
+        "AddedDate": "29/05/2026",
+        "AddedTime": "08:11 am"
+      }
+    ]
+  },
+  {
+    "Name": "css flows",
+    "Email": "new@gmail.com",
+    "Password": "$2b$10$.eJ0rv6IMxUapbI4qsqN1.2c0c8eK1PWi8gKvkyacwbxABsUmVko2",
+    "Phone": "9958492503"
+  },
+  {
+    "Name": "name",
+    "Email": "mail@gmail.com",
+    "Password": "$2b$10$9TMWHrLYJ6T/WMPV2fyi8.RPQSXKD1IjDm4rqESNq1.QFSL0rdpTi",
+    "Phone": "9988776655"
+  },
+  {
+    "Name": "tashif",
+    "Email": "tashif@gmail.com",
+    "Password": "$2b$10$Vsw2l00m9D/hFNuX7reIseaXoWhMhUylGEwsXDnE/a/yEEYpQ6Y4y",
+    "Phone": "1234567890",
+    "Tasks": [
+      {
+        "id": "HAV595",
+        "Task": "have to eat food",
+        "AddedDate": "01/06/2026",
+        "AddedTime": "09:32 am"
+      },
+      {
+        "id": "HAV186",
+        "Task": "Have to do something",
+        "AddedDate": "01/06/2026",
+        "AddedTime": "09:32 am"
+      }
+    ]
+  },
+  {
+    "Name": "mohini",
+    "Email": "mohini@gmail.com",
+    "Password": "$2b$10$WwyYcy3n5BVqe3BpKlpsquWw7IdWaAZh3B9JMJkeG/Zp96UH9qw9i",
+    "Phone": "12345678",
+    "Tasks": [
+      {
+        "id": "JUS312",
+        "Task": "Just a task",
+        "AddedDate": "01/06/2026",
+        "AddedTime": "09:33 am"
+      }
+    ]
+  }
+]

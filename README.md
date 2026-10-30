@@ -99,7 +99,7 @@ Email login details should not be written directly inside the code. They should 
 
 ## Future Improvements
 
-- Implement secure password hashing
+
 - Migrate JSON storage to a database
 - Improve error handling and input validation
 - Strengthen authentication and authorization
