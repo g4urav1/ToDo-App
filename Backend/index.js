@@ -7,7 +7,6 @@ const path = require("path");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 
-
 async function findAuthenticatedUser(users, Email, Password) {
   const user = users.find((existingUser) => existingUser.Email === Email);
 
@@ -316,7 +315,10 @@ app.post("/addtask", async (req, res) => {
       AddedTime: AddTime,
     });
 
-    await fs.writeFile("./database.users.json", JSON.stringify(UserArr, null, 2));
+    await fs.writeFile(
+      "./database.users.json",
+      JSON.stringify(UserArr, null, 2),
+    );
 
     res.json({ Message: "Task Added" });
   } catch (error) {
@@ -349,7 +351,10 @@ app.post("/removetask", async (req, res) => {
 
     ExistingUser.Tasks = ExistingUser.Tasks.filter((task) => task.id !== id);
 
-    await fs.writeFile("./database.users.json", JSON.stringify(UserArr, null, 2));
+    await fs.writeFile(
+      "./database.users.json",
+      JSON.stringify(UserArr, null, 2),
+    );
 
     res.json("Task Removed");
   } catch (error) {
@@ -385,7 +390,6 @@ app.post("/alltasks", async (req, res) => {
 });
 
 async function startServer() {
-  await ensureUsersFile();
   const port = process.env.PORT || 1111;
   app.listen(port, "0.0.0.0", () => {
     console.log(`API listening on port ${port}`);
